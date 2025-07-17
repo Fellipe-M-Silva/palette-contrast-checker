@@ -2,9 +2,12 @@
 import { ref, onMounted, computed } from 'vue'
 import ColorInput from '../components/ColorInput.vue'
 import ColorCombinationsList from '../components/ColorCombinationsList.vue'
+import ColorCombinationsTable from '../components/ColorCombinationsTable.vue'
 import { checkContrast } from '../utils/ColorUtils'
 
 const colorPalette = ref([])
+const activeView = ref('list')
+const plainColorPalette = computed(() => colorPalette.value.map((c) => c.value))
 let nextId = 0
 
 onMounted(() => {
@@ -100,57 +103,81 @@ const filteredCombinations = computed(() => {
       </div>
 
       <div class="container right">
-        <h2>Combinações Geradas</h2>
-        <div class="filters-container">
+        <div class="actions">
+          <h2 style="flex: 1 0 0;">Combinações Geradas</h2>
+        <div class="view-toggle-buttons">
+        </div>
           <button
-            :class="{ 'filter-button': true, active: currentFilter === 'all' }"
-            @click="currentFilter = 'all'"
+            :class="{ 'toggle-button': true, active: activeView === 'list' }"
+            @click="activeView = 'list'"
           >
-            Todos ({{ generatedCombinations.length }})
+            Lista
           </button>
           <button
-            :class="{ 'filter-button': true, active: currentFilter === 'aa-large' }"
-            @click="currentFilter = 'aa-large'"
+            :class="{ 'toggle-button': true, active: activeView === 'table' }"
+            @click="activeView = 'table'"
           >
-            AA Grande (>3.1:1) ({{
-              filteredCombinations.filter(
-                (c) =>
-                  checkContrast(c[0], c[1]).startsWith('3.1:') ||
-                  parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 3.1,
-              ).length
-            }})
-          </button>
-          <button
-            :class="{ 'filter-button': true, active: currentFilter === 'aa-normal' }"
-            @click="currentFilter = 'aa-normal'"
-          >
-            AA Normal (>4.5:1) ({{
-              filteredCombinations.filter(
-                (c) =>
-                  checkContrast(c[0], c[1]).startsWith('4.5:') ||
-                  parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 4.5,
-              ).length
-            }})
-          </button>
-          <button
-            :class="{ 'filter-button': true, active: currentFilter === 'aaa' }"
-            @click="currentFilter = 'aaa'"
-          >
-            AAA (>7:1) ({{
-              filteredCombinations.filter(
-                (c) =>
-                  checkContrast(c[0], c[1]).startsWith('7.0:') ||
-                  parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 7.0,
-              ).length
-            }})
+            Tabela
           </button>
         </div>
+        <div>
+          <div class="container" v-if="activeView === 'list'">
 
-        <ColorCombinationsList
-          :combinations="filteredCombinations"
-          :selected-combinations="selectedCombinations"
-          @update:selectedCombinations="selectedCombinations = $event"
-        />
+            <div class="filters-container">
+              <button
+                :class="{ 'filter-button': true, active: currentFilter === 'all' }"
+                @click="currentFilter = 'all'"
+              >
+                Todos ({{ generatedCombinations.length }})
+              </button>
+              <button
+                :class="{ 'filter-button': true, active: currentFilter === 'aa-large' }"
+                @click="currentFilter = 'aa-large'"
+              >
+                AA Grande (>3.1:1) ({{
+                  filteredCombinations.filter(
+                    (c) =>
+                      checkContrast(c[0], c[1]).startsWith('3.1:') ||
+                      parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 3.1,
+                  ).length
+                }})
+              </button>
+              <button
+                :class="{ 'filter-button': true, active: currentFilter === 'aa-normal' }"
+                @click="currentFilter = 'aa-normal'"
+              >
+                AA Normal (>4.5:1) ({{
+                  filteredCombinations.filter(
+                    (c) =>
+                      checkContrast(c[0], c[1]).startsWith('4.5:') ||
+                      parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 4.5,
+                  ).length
+                }})
+              </button>
+              <button
+                :class="{ 'filter-button': true, active: currentFilter === 'aaa' }"
+                @click="currentFilter = 'aaa'"
+              >
+                AAA (>7:1) ({{
+                  filteredCombinations.filter(
+                    (c) =>
+                      checkContrast(c[0], c[1]).startsWith('7.0:') ||
+                      parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 7.0,
+                  ).length
+                }})
+              </button>
+            </div>
+
+            <ColorCombinationsList
+              :combinations="filteredCombinations"
+              :selected-combinations="selectedCombinations"
+              @update:selectedCombinations="selectedCombinations = $event"
+            />
+          </div>
+        </div>
+        <div class="container right table-view" v-if="activeView === 'table'">
+          <ColorCombinationsTable :palette="plainColorPalette" />
+        </div>
       </div>
     </main>
   </div>
@@ -203,6 +230,15 @@ header {
 
 .generate-button:hover {
   background-color: #2980b9;
+}
+
+.toggle-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .filters-container {

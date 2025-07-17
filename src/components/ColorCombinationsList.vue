@@ -52,7 +52,6 @@ const calculateAndDisplayContrast = (color1, color2) => {
 
 <template>
   <div class="color-combinations">
-
     <p v-if="combinations.length === 0">Nenhuma combinação para exibir.</p>
     <div v-else class="list">
       <div v-for="(combination, index) in combinations" :key="index" class="combination-item">

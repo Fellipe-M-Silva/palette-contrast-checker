@@ -17,7 +17,7 @@ export function decompColor(color) {
   }
 }
 
-function srgbLuminance(color) {
+export function srgbLuminance(color) {
   const c8 = []
   const csRGB = []
 
