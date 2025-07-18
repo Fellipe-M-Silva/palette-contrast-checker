@@ -79,9 +79,8 @@ const calculateAndDisplayContrast = (color1, color2) => {
 
 <style scoped>
 .color-combinations {
-  /* margin-top: 30px; */
   display: flex;
-  align-self: stretch;
+  flex: 1 0 0;
   flex-direction: column;
 }
 

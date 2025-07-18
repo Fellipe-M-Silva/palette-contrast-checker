@@ -1,28 +1,24 @@
-/* color palette from <https://github.com/vuejs/theme> */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
 :root {
-  --vt-c-white: #ffffff;
-  --vt-c-white-soft: #f8f8f8;
-  --vt-c-white-mute: #f2f2f2;
+  --colors-surface-a: #fcfcfc;
+  --colors-surface-b: #e4e4e4;
+  --colors-surface-c: #eaeaea;
 
-  --vt-c-black: #181818;
-  --vt-c-black-soft: #222222;
-  --vt-c-black-mute: #282828;
+  --bunker-50: #f7f7f8;
+  --bunker-100: #ededf1;
+  --bunker-200: #d7d8e0;
+  --bunker-900: #373843;
+  --bunker-950: #17171c;
 
-  --vt-c-indigo: #2c3e50;
+  --red-orange-500: #fd3030;
+  --red-orange-600: #eb1717;
+  --red-orange-900: #871515;
 
   --colors-border-light: #dcdcdc;
   --colors-border-medium: #9b9b9b;
   --colors-border-dark: #444444;
-
-  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
-  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
-  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
-  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
-
-  --vt-c-text-light-1: var(--vt-c-indigo);
-  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
-  --vt-c-text-dark-1: var(--vt-c-white);
-  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
 }
 
 /* semantic color variables for this project */
@@ -31,13 +27,20 @@
   --color-background-soft: var(--vt-c-white-soft);
   --color-background-mute: var(--vt-c-white-mute);
 
-  --color-border: var(--vt-c-divider-light-2);
-  --color-border-hover: var(--vt-c-divider-light-1);
+  --color-primary: var(--bunker-900);
+  --color-primary-hover: var(--bunker-950);
+  --color-secondary: var(--bunker-100);
+  --color-secondary-hover: var(--bunker-200);
+  --color-destructive: var(--bunker-100);
+  --color-destructive-hover: var(--bunker-200);
 
-  --color-heading: var(--vt-c-text-light-1);
-  --color-text: var(--vt-c-text-light-1);
+  --color-text-on-primary: var(--bunker-50);
+  --color-text-on-secondary: var(--bunker-950);
+  --color-text-on-destructive: var(--red-orange-900);
 
-  --section-gap: 160px;
+  --colors-border-light: #dcdcdc;
+  --colors-border-medium: #9b9b9b;
+  --colors-border-dark: #444444;
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -66,11 +69,10 @@ body {
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
-  transition:
-    color 0.5s,
-    background-color 0.5s;
-  line-height: 1.6;
+  line-height: 1.5;
   font-family:
+    'Work Sans',
+    'Geist',
     Inter,
     -apple-system,
     BlinkMacSystemFont,

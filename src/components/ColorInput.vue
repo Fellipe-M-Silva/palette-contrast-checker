@@ -49,7 +49,7 @@ const handleColorPickerInput = () => {
         class="text-input"
       />
     </div>
-    <button v-if="removable" @click="$emit('remove')" class="remove-button">Remover</button>
+    <button v-if="removable" @click="$emit('remove')" class="destructive"><span class="material-icons-outlined">remove</span></button>
   </div>
 </template>
 
@@ -58,31 +58,31 @@ const handleColorPickerInput = () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 1rem;
+  padding: 0.5rem;
   border: 1px solid var(--colors-border-medium);
   border-radius: 0.5rem;
-  flex: 1;
+  flex: 1 0 0;
 }
 
 .color-input-group {
   display: flex;
-  gap: 10px;
+  gap: 0.5rem;
   width: 100%;
 }
 
 .text-input {
-  flex-grow: 1; /* Ocupa o espaço restante */
-  padding: 8px;
+  flex-grow: 1;
+  padding: 0.5rem;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 0.25rem;
 }
 
 .color-picker-input {
-  width: 40px; /* Tamanho fixo para o color picker */
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   border: 1px solid var(--colors-border-medium);
   border-radius: 0.25rem;
-  background-color: transparent; /* Fundo transparente */
+  background-color: transparent;
   padding: 0;
   cursor: pointer;
 }
@@ -99,18 +99,8 @@ input[type='color']::-webkit-color-swatch {
   border-radius: 0.25rem;
 }
 
-.remove-button {
-  background-color: #fcfcfc;
-  height: 40px;
-  color: #e74c3c;
-  border: solid 1px var(--colors-border-medium);
-  padding: 8px 12px;
+.destructive {
   border-radius: 0.25rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.remove-button:hover {
-  background-color: #f2f2f2;
+  padding: 0.5rem 0.5rem;
 }
 </style>

@@ -49,10 +49,9 @@ const generateAllPairs = (colors) => {
   return combinations
 }
 
-const currentFilter = ref('all') // Default filter
+const currentFilter = ref('all')
 
 const filteredCombinations = computed(() => {
-  // Using computed property for efficiency
   if (currentFilter.value === 'all') {
     return generatedCombinations.value
   }
@@ -73,21 +72,27 @@ const filteredCombinations = computed(() => {
     }
   })
 })
+
+const generateRandomColor = () => {
+  return `#${Math.floor(Math.random() * 16777215)
+    .toString(16)
+    .padStart(6, '0')}`
+}
 </script>
 
 <template>
   <div>
     <header>
-      <h4>Gerador de Combinações de Cores</h4>
+      <h2>Verificador de paleta</h2>
     </header>
     <main>
-      <div class="container left">
-        <h2>Paleta de cores</h2>
+      <aside class="container left">
+        <h1>Paleta de cores</h1>
         <div class="actions">
-          <button @click="addColorSelector('#FFFFFF')" class="add-button">Adicionar Cor</button>
-          <button @click="handleGenerateCombinations" class="generate-button">
-            Gerar Combinações
+          <button @click="addColorSelector(generateRandomColor())" class="secondary">
+            + Adicionar Cor
           </button>
+          <button @click="handleGenerateCombinations" class="primary">Gerar Combinações</button>
         </div>
 
         <div class="list">
@@ -100,38 +105,38 @@ const filteredCombinations = computed(() => {
             @remove="removeColorSelector(index)"
           />
         </div>
-      </div>
+      </aside>
+
+      <hr />
 
       <div class="container right">
         <div class="actions">
-          <h2 style="flex: 1 0 0;">Combinações Geradas</h2>
-        <div class="view-toggle-buttons">
-        </div>
+          <h2 style="flex: 1 0 0">Combinações Geradas</h2>
+          <div class="view-toggle-buttons"></div>
           <button
-            :class="{ 'toggle-button': true, active: activeView === 'list' }"
+            :class="{ secondary: true, active: activeView === 'list' }"
             @click="activeView = 'list'"
           >
             Lista
           </button>
           <button
-            :class="{ 'toggle-button': true, active: activeView === 'table' }"
+            :class="{ secondary: true, active: activeView === 'table' }"
             @click="activeView = 'table'"
           >
             Tabela
           </button>
         </div>
         <div>
-          <div class="container" v-if="activeView === 'list'">
-
+          <div class="container scroll" v-if="activeView === 'list'">
             <div class="filters-container">
               <button
-                :class="{ 'filter-button': true, active: currentFilter === 'all' }"
+                :class="{ chip: true, active: currentFilter === 'all' }"
                 @click="currentFilter = 'all'"
               >
                 Todos ({{ generatedCombinations.length }})
               </button>
               <button
-                :class="{ 'filter-button': true, active: currentFilter === 'aa-large' }"
+                :class="{ chip: true, active: currentFilter === 'aa-large' }"
                 @click="currentFilter = 'aa-large'"
               >
                 AA Grande (>3.1:1) ({{
@@ -143,7 +148,7 @@ const filteredCombinations = computed(() => {
                 }})
               </button>
               <button
-                :class="{ 'filter-button': true, active: currentFilter === 'aa-normal' }"
+                :class="{ chip: true, active: currentFilter === 'aa-normal' }"
                 @click="currentFilter = 'aa-normal'"
               >
                 AA Normal (>4.5:1) ({{
@@ -155,7 +160,7 @@ const filteredCombinations = computed(() => {
                 }})
               </button>
               <button
-                :class="{ 'filter-button': true, active: currentFilter === 'aaa' }"
+                :class="{ chip: true, active: currentFilter === 'aaa' }"
                 @click="currentFilter = 'aaa'"
               >
                 AAA (>7:1) ({{
@@ -175,7 +180,7 @@ const filteredCombinations = computed(() => {
             />
           </div>
         </div>
-        <div class="container right table-view" v-if="activeView === 'table'">
+        <div class="container table-view" v-if="activeView === 'table'">
           <ColorCombinationsTable :palette="plainColorPalette" />
         </div>
       </div>
@@ -186,10 +191,20 @@ const filteredCombinations = computed(() => {
 <style>
 header {
   height: 5rem;
-  background-color: var(--vt-c-white-soft);
+  background-color: var(--colors-surface-a);
   display: flex;
   align-items: center;
-  padding: 1.5rem;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--colors-border-medium);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .color-selectors-container {
@@ -204,53 +219,9 @@ header {
   gap: 0.5rem;
 }
 
-.add-button,
-.generate-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.2s;
-}
-
-.add-button {
-  background-color: #2ecc71;
-  color: white;
-}
-
-.add-button:hover {
-  background-color: #27ae60;
-}
-
-.generate-button {
-  background-color: #3498db;
-  color: white;
-}
-
-.generate-button:hover {
-  background-color: #2980b9;
-}
-
-.toggle-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.2s, color 0.2s;
-}
-
 .filters-container {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1rem;
-}
-
-.filters-container button {
-  background-color: var(--vt-c-white-soft);
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 2rem;
 }
 </style>
