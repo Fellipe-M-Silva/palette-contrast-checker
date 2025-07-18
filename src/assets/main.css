@@ -12,6 +12,7 @@
   display: flex;
   flex-direction: column;
   max-height: 100vh;
+  background-color: var(--colors-surface-a);
 }
 
 main {
@@ -59,10 +60,13 @@ main {
 }
 
 button {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
   height: 2.5rem;
   border: none;
   border-radius: 0.5rem;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1rem;
   cursor: pointer;
   font-size: 0.875rem;
   transition: background-color 0.3s;
@@ -96,16 +100,19 @@ button.destructive:hover {
 }
 
 button.chip {
-  background-color: var(--color-secondary);
+  background-color: transparent;
   color: var(--color-text-on-secondary);
+  border: 1px solid var(--colors-border-light);
+  display: flex;
+  align-items: center;
   height: 2rem;
-  padding: 0.25rem 1rem;
+  padding: 0.25rem 0.25rem 0.25rem 0.75rem;
   font-size: 0.825rem;
   border-radius: 3rem;
 }
 
 button.chip:hover {
-  background-color: var(--color-secondary-hover);
+  background-color: var(--bunker-100);
 }
 
 button.chip:active {
@@ -116,4 +123,8 @@ button.chip:active {
 button.icon {
   width: 2.5rem;
   padding: 0.5rem;
+}
+
+button.icon-left {
+  padding-left: 0.5rem
 }

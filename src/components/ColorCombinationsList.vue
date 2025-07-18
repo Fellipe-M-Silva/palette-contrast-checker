@@ -91,14 +91,19 @@ const calculateAndDisplayContrast = (color1, color2) => {
   gap: 1rem;
   border: 1px solid var(--colors-border-medium);
   border-radius: 0.5rem;
-  padding: 1rem;
-  background-color: #fff;
+  padding: 0.25rem;
+  background-color: var(--colors-surface-a);
+  transition: all 0.3s ease-out;
+}
+
+.combination-item:hover {
+  background-color: var(--colors-surface-b);
 }
 
 .text-preview-box {
   flex: 3 0 0;
   display: flex;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   align-items: center;
   border: 1px solid var(--colors-border-light);
   border-radius: 0.25rem;
@@ -108,5 +113,9 @@ const calculateAndDisplayContrast = (color1, color2) => {
   flex: 1 0 0;
   font-weight: bold;
   color: #333;
+}
+
+input[type='checkbox'] {
+  margin: 0.5rem 1rem;
 }
 </style>

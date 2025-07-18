@@ -49,7 +49,7 @@ const handleColorPickerInput = () => {
         class="text-input"
       />
     </div>
-    <button v-if="removable" @click="$emit('remove')" class="destructive"><span class="material-icons-outlined">remove</span></button>
+    <button v-if="removable" @click="$emit('remove')" class="secondary icon"><span class="material-icons-outlined">remove</span></button>
   </div>
 </template>
 

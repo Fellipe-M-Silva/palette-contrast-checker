@@ -7,7 +7,26 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  filteredCombinations: {
+    type: Array,
+    default: () => [],
+  },
+  allCombinations: {
+    type: Array,
+    default: () => [],
+  },
 })
+
+const isCombinationActive = (color1, color2) => {
+  const c1Lower = color1.toLowerCase()
+  const c2Lower = color2.toLowerCase()
+
+  return props.filteredCombinations.some(
+    (comb) =>
+      (comb[0].toLowerCase() === c1Lower && comb[1].toLowerCase() === c2Lower) ||
+      (comb[0].toLowerCase() === c2Lower && comb[1].toLowerCase() === c1Lower),
+  )
+}
 
 const calculateAndDisplayContrast = (color1, color2) => {
   return checkContrast(color1, color2)
@@ -53,7 +72,16 @@ const getContrastTextColor = (backgroundColor) => {
                 <div class="diagonal-cell"></div>
               </template>
               <template v-else>
-                <div class="contrast-cell" :style="{ backgroundColor: rowColor, color: colColor }">
+                <div
+                  :class="{
+                    'contrast-cell': true,
+                    'inactive-combination': !isCombinationActive(rowColor, colColor),
+                  }"
+                  :style="{
+                    backgroundColor: colColor,
+                    color: isCombinationActive(rowColor, colColor) ? rowColor : 'inherit',
+                  }"
+                >
                   {{ calculateAndDisplayContrast(rowColor, colColor) }}
                 </div>
               </template>
@@ -73,14 +101,15 @@ const getContrastTextColor = (backgroundColor) => {
 
 .table-wrapper {
   overflow-x: auto;
+  border: 1px solid var(--colors-border-medium);
+  border-radius: 0.5rem;
 }
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-spacing: 0.5rem;
   border-radius: 0.5rem;
   overflow: hidden;
-  border: 1px solid var(--colors-border-medium);
 }
 
 th,
@@ -89,6 +118,7 @@ td {
   padding: 0;
   text-align: center;
   white-space: nowrap;
+  border-radius: 0.25rem;
   min-width: 80px;
   height: 4rem;
   box-sizing: border-box; /* Garante que padding/border não aumentem o tamanho */
@@ -96,24 +126,16 @@ td {
 
 th {
   font-weight: bold;
-  background-color: #f8f8f8; /* Fundo para células de cabeçalho padrão */
-  position: sticky;
-  top: 0;
-  z-index: 2;
+  background-color: #f8f8f8;
 }
 
 th:first-child {
   background-color: #f0f0f0;
-  z-index: 3;
-}
-
-tbody th {
-  position: sticky;
-  left: 0;
-  z-index: 1;
 }
 
 .contrast-cell {
+  border-radius: 0.25rem;
+  border: 1px;
   width: 100%;
   height: 100%;
   display: flex;
@@ -125,10 +147,24 @@ tbody th {
 .diagonal-cell {
   width: 100%;
   height: 100%;
-  background-color: #f0f0f0; /* Cor para células na diagonal */
+  background-color: #f3f3f3; /* Cor para células na diagonal */
   display: flex;
   align-items: center;
   justify-content: center;
   /* Pode adicionar um ícone ou texto como 'N/A' se quiser */
+}
+
+.inactive-combination {
+  background-color: var(--colors-surface-b) !important;
+  color: transparent;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.selection-checkbox {
+  position: relative;
+  top: 1rem;
+  left: 0.5rem;
+  cursor: pointer;
 }
 </style>

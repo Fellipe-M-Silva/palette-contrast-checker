@@ -284,8 +284,8 @@ const exportPaletteOnly = () => {
         </div>
 
         <div class="container close">
-          <button @click="addColorSelector(generateRandomColor())" class="secondary icon">
-            <span class="material-icons-outlined" title="Adicionar cor">add</span>
+          <button @click="addColorSelector(generateRandomColor())" class="primary icon-left">
+            <span class="material-icons-outlined" title="Adicionar cor">add</span> Adicionar cor
           </button>
           <button class="secondary icon">
             <span
@@ -295,9 +295,9 @@ const exportPaletteOnly = () => {
               >restart_alt</span
             >
           </button>
-          <button @click="handleGenerateCombinations" class="primary" id="generate-combinations">
+          <!-- <button @click="handleGenerateCombinations" class="primary" id="generate-combinations">
             Gerar Combinações
-          </button>
+          </button> -->
         </div>
 
         <div class="list">
@@ -315,9 +315,8 @@ const exportPaletteOnly = () => {
       <hr />
 
       <div class="container col right">
-        <div class="actions">
-          <h2 style="flex: 1 0 0">Combinações Geradas</h2>
-          <div class="view-toggle-buttons"></div>
+        <div class="container close">
+          <h2 style="margin-right: auto">Combinações Geradas</h2>
           <button
             :class="{ secondary: true, active: activeView === 'list' }"
             @click="activeView = 'list'"
@@ -331,53 +330,62 @@ const exportPaletteOnly = () => {
             Tabela
           </button>
         </div>
+        <div class="container close">
+          <button
+            :class="{ chip: true, active: currentFilter === 'all' }"
+            @click="currentFilter = 'all'"
+          >
+            Todos
+            <div class="count">{{ generatedCombinations.length }}</div>
+          </button>
+          <button
+            :class="{ chip: true, active: currentFilter === 'aa-large' }"
+            @click="currentFilter = 'aa-large'"
+          >
+            AA Grande (>3.1:1)
+            <div class="count">
+              {{
+                generatedCombinations.filter(
+                  (c) =>
+                    checkContrast(c[0], c[1]).startsWith('3.1:') ||
+                    parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 3.1,
+                ).length
+              }}
+            </div>
+          </button>
+          <button
+            :class="{ chip: true, active: currentFilter === 'aa-normal' }"
+            @click="currentFilter = 'aa-normal'"
+          >
+            AA Normal (>4.5:1)
+            <div class="count">
+              {{
+                generatedCombinations.filter(
+                  (c) =>
+                    checkContrast(c[0], c[1]).startsWith('4.5:') ||
+                    parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 4.5,
+                ).length
+              }}
+            </div>
+          </button>
+          <button
+            :class="{ chip: true, active: currentFilter === 'aaa' }"
+            @click="currentFilter = 'aaa'"
+          >
+            AAA (>7:1)
+            <div class="count">
+              {{
+                generatedCombinations.filter(
+                  (c) =>
+                    checkContrast(c[0], c[1]).startsWith('7.0:') ||
+                    parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 7.0,
+                ).length
+              }}
+            </div>
+          </button>
+        </div>
         <div>
           <div class="container col scroll" v-if="activeView === 'list'">
-            <div class="filters-container">
-              <button
-                :class="{ chip: true, active: currentFilter === 'all' }"
-                @click="currentFilter = 'all'"
-              >
-                Todos ({{ generatedCombinations.length }})
-              </button>
-              <button
-                :class="{ chip: true, active: currentFilter === 'aa-large' }"
-                @click="currentFilter = 'aa-large'"
-              >
-                AA Grande (>3.1:1) ({{
-                  filteredCombinations.filter(
-                    (c) =>
-                      checkContrast(c[0], c[1]).startsWith('3.1:') ||
-                      parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 3.1,
-                  ).length
-                }})
-              </button>
-              <button
-                :class="{ chip: true, active: currentFilter === 'aa-normal' }"
-                @click="currentFilter = 'aa-normal'"
-              >
-                AA Normal (>4.5:1) ({{
-                  filteredCombinations.filter(
-                    (c) =>
-                      checkContrast(c[0], c[1]).startsWith('4.5:') ||
-                      parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 4.5,
-                  ).length
-                }})
-              </button>
-              <button
-                :class="{ chip: true, active: currentFilter === 'aaa' }"
-                @click="currentFilter = 'aaa'"
-              >
-                AAA (>7:1) ({{
-                  filteredCombinations.filter(
-                    (c) =>
-                      checkContrast(c[0], c[1]).startsWith('7.0:') ||
-                      parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 7.0,
-                  ).length
-                }})
-              </button>
-            </div>
-
             <ColorCombinationsList
               :combinations="filteredCombinations"
               :selected-combinations="selectedCombinations"
@@ -386,7 +394,13 @@ const exportPaletteOnly = () => {
           </div>
         </div>
         <div class="container table-view" v-if="activeView === 'table'">
-          <ColorCombinationsTable :palette="plainColorPalette" />
+          <ColorCombinationsTable
+            :palette="plainColorPalette"
+            :filtered-combinations="filteredCombinations"
+            :all-combinations="generatedCombinations"
+            :selected-combinations="selectedCombinations"
+            @update:selectedCombinations="selectedCombinations = $event"
+          />
         </div>
       </div>
     </main>
@@ -434,5 +448,18 @@ header h2 {
 
 #generate-combinations {
   margin-left: auto;
+}
+
+.count {
+  font-size: 0.75rem;
+  background-color: var(--color-secondary);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 1rem;
+  margin-left: 0.5rem;
 }
 </style>
