@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import ColorInput from '../components/ColorInput.vue'
 import ColorCombinationsList from '../components/ColorCombinationsList.vue'
 import ColorCombinationsTable from '../components/ColorCombinationsTable.vue'
@@ -13,9 +13,18 @@ const selectedCombinations = ref([])
 let nextId = 0
 
 onMounted(() => {
-  addColorSelector('#000000')
   addColorSelector('#FFFFFF')
+  addColorSelector('#000000')
+  handleGenerateCombinations()
 })
+
+watch(
+  colorPalette,
+  () => {
+    handleGenerateCombinations()
+  },
+  { deep: true },
+)
 
 const addColorSelector = (initialColor = '#FFFFFF') => {
   colorPalette.value.push({
@@ -65,6 +74,17 @@ const generateAllPairs = (colors) => {
     }
   }
   return combinations
+}
+
+const resetSelections = () => {
+  selectedCombinations.value = []
+  colorPalette.value = []
+  nextId = 0
+
+  addColorSelector('#FFFFFF')
+  addColorSelector('#000000')
+
+  handleGenerateCombinations()
 }
 
 const currentFilter = ref('all')
@@ -215,30 +235,69 @@ const exportSelected = () => {
 
   alert('Paleta e combinações selecionadas exportadas como JSON!')
 }
+
+const exportPaletteOnly = () => {
+  const dataToExport = {
+    palette: plainColorPalette.value,
+  }
+
+  const jsonString = JSON.stringify(dataToExport, null, 2)
+
+  const blob = new Blob([jsonString], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'color_palette.json' // Name of the exported file
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+
+  alert('Paleta de cores exportada com sucesso!')
+}
 </script>
 
 <template>
   <div>
     <header>
       <h2>Verificador de paleta</h2>
-      <button @click="triggerFileInput" class="secondary">Importar Paleta</button>
-      <input
-        type="file"
-        ref="fileInput"
-        @change="importPalette"
-        accept=".json"
-        style="display: none"
-      />
       <button @click="exportSelected" class="secondary">Exportar Selecionados</button>
     </header>
     <main>
-      <aside class="container left">
-        <h1>Paleta de cores</h1>
-        <div class="actions">
-          <button @click="addColorSelector(generateRandomColor())" class="secondary">
-            + Adicionar Cor
+      <aside class="container col left">
+        <div class="container close">
+          <h1 style="flex: 1 0 0">Paleta de cores</h1>
+          <button class="secondary icon" @click="triggerFileInput" title="Importar paleta">
+            <span class="material-icons-outlined">file_open</span>
           </button>
-          <button @click="handleGenerateCombinations" class="primary">Gerar Combinações</button>
+          <input
+            type="file"
+            ref="fileInput"
+            accept=".json"
+            @change="importPalette"
+            style="display: none"
+          />
+          <button class="secondary icon" @click="exportPaletteOnly" title="Exportar paleta">
+            <span class="material-icons-outlined">download</span>
+          </button>
+        </div>
+
+        <div class="container close">
+          <button @click="addColorSelector(generateRandomColor())" class="secondary icon">
+            <span class="material-icons-outlined" title="Adicionar cor">add</span>
+          </button>
+          <button class="secondary icon">
+            <span
+              class="material-icons-outlined"
+              @click="resetSelections"
+              title="Reiniciar seleções"
+              >restart_alt</span
+            >
+          </button>
+          <button @click="handleGenerateCombinations" class="primary" id="generate-combinations">
+            Gerar Combinações
+          </button>
         </div>
 
         <div class="list">
@@ -255,7 +314,7 @@ const exportSelected = () => {
 
       <hr />
 
-      <div class="container right">
+      <div class="container col right">
         <div class="actions">
           <h2 style="flex: 1 0 0">Combinações Geradas</h2>
           <div class="view-toggle-buttons"></div>
@@ -273,7 +332,7 @@ const exportSelected = () => {
           </button>
         </div>
         <div>
-          <div class="container scroll" v-if="activeView === 'list'">
+          <div class="container col scroll" v-if="activeView === 'list'">
             <div class="filters-container">
               <button
                 :class="{ chip: true, active: currentFilter === 'all' }"
@@ -371,5 +430,9 @@ header h2 {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1rem;
+}
+
+#generate-combinations {
+  margin-left: auto;
 }
 </style>
