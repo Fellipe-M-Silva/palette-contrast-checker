@@ -134,6 +134,8 @@ th:first-child {
 }
 
 .contrast-cell {
+  font-family: 'Spline Sans Mono', monospace;
+  font-size: 0.875rem;
   border-radius: 0.25rem;
   border: 1px;
   width: 100%;

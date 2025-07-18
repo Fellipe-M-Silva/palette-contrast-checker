@@ -49,7 +49,9 @@ const handleColorPickerInput = () => {
         class="text-input"
       />
     </div>
-    <button v-if="removable" @click="$emit('remove')" class="secondary icon"><span class="material-icons-outlined">remove</span></button>
+    <button v-if="removable" @click="$emit('remove')" class="secondary icon">
+      <span class="material-symbols-outlined"> remove </span>
+    </button>
   </div>
 </template>
 
@@ -57,8 +59,8 @@ const handleColorPickerInput = () => {
 .color-selector-card {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
+  gap: 0.25rem;
+  padding: 0.25rem;
   border: 1px solid var(--colors-border-medium);
   border-radius: 0.5rem;
   flex: 1 0 0;
@@ -66,15 +68,17 @@ const handleColorPickerInput = () => {
 
 .color-input-group {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.25rem;
   width: 100%;
 }
 
 .text-input {
+  font-family: 'Spline Sans Mono', monospace;
   flex-grow: 1;
   padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 0.25rem;
+  min-width: 60px;
 }
 
 .color-picker-input {
@@ -99,7 +103,7 @@ input[type='color']::-webkit-color-swatch {
   border-radius: 0.25rem;
 }
 
-.destructive {
+.icon {
   border-radius: 0.25rem;
   padding: 0.5rem 0.5rem;
 }

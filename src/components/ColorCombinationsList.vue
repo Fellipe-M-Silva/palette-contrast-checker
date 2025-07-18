@@ -13,7 +13,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:selectedCombinations'])
+// const emit = defineEmits(['update:selectedCombinations'])
 
 const internalSelectedCombinations = ref([...props.selectedCombinations])
 
@@ -25,25 +25,25 @@ watch(
   { deep: true },
 )
 
-const isSelected = (combination) => {
-  return internalSelectedCombinations.value.some(
-    (selected) => selected[0] === combination[0] && selected[1] === combination[1],
-  )
-}
+// const isSelected = (combination) => {
+//   return internalSelectedCombinations.value.some(
+//     (selected) => selected[0] === combination[0] && selected[1] === combination[1],
+//   )
+// }
 
-const toggleSelection = (combination) => {
-  const index = internalSelectedCombinations.value.findIndex(
-    (selected) => selected[0] === combination[0] && selected[1] === combination[1],
-  )
+// const toggleSelection = (combination) => {
+//   const index = internalSelectedCombinations.value.findIndex(
+//     (selected) => selected[0] === combination[0] && selected[1] === combination[1],
+//   )
 
-  if (index > -1) {
-    internalSelectedCombinations.value.splice(index, 1)
-  } else {
-    internalSelectedCombinations.value.push(combination)
-  }
+//   if (index > -1) {
+//     internalSelectedCombinations.value.splice(index, 1)
+//   } else {
+//     internalSelectedCombinations.value.push(combination)
+//   }
 
-  emit('update:selectedCombinations', [...internalSelectedCombinations.value])
-}
+//   emit('update:selectedCombinations', [...internalSelectedCombinations.value])
+// }
 
 const calculateAndDisplayContrast = (color1, color2) => {
   return checkContrast(color1, color2)
@@ -64,14 +64,14 @@ const calculateAndDisplayContrast = (color1, color2) => {
           <strong>{{ calculateAndDisplayContrast(combination[0], combination[1]) }}</strong>
         </p>
 
-        <div class="export-selection">
+        <!-- <div class="export-selection">
           <input
             type="checkbox"
             :id="`select-${index}`"
             :checked="isSelected(combination)"
             @change="toggleSelection(combination)"
           />
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -80,6 +80,7 @@ const calculateAndDisplayContrast = (color1, color2) => {
 <style scoped>
 .color-combinations {
   display: flex;
+  margin-top: 0.5rem;
   flex: 1 0 0;
   flex-direction: column;
 }
@@ -101,7 +102,7 @@ const calculateAndDisplayContrast = (color1, color2) => {
 }
 
 .text-preview-box {
-  flex: 3 0 0;
+  flex: 5 0 0;
   display: flex;
   padding: 0.5rem 1rem;
   align-items: center;
@@ -110,6 +111,7 @@ const calculateAndDisplayContrast = (color1, color2) => {
 }
 
 .contrast-ratio {
+  font-family: 'Spline Sans Mono', monospace;
   flex: 1 0 0;
   font-weight: bold;
   color: #333;

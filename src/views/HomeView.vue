@@ -201,40 +201,40 @@ const importPalette = (event) => {
   reader.readAsText(file)
 }
 
-const exportSelected = () => {
-  if (selectedCombinations.value.length === 0) {
-    alert('Nenhuma combinação selecionada para exportar!')
-    return
-  }
+// const exportSelected = () => {
+//   if (selectedCombinations.value.length === 0) {
+//     alert('Nenhuma combinação selecionada para exportar!')
+//     return
+//   }
 
-  const currentPaletteForExport = plainColorPalette.value
-  const selectedCombinationsData = selectedCombinations.value.map((comb) => ({
-    color1: comb[0],
-    color2: comb[1],
-    contrast: checkContrast(comb[0], comb[1]), // Recalcula o contraste para garantir que esteja atualizado
-  }))
+//   const currentPaletteForExport = plainColorPalette.value
+//   const selectedCombinationsData = selectedCombinations.value.map((comb) => ({
+//     color1: comb[0],
+//     color2: comb[1],
+//     contrast: checkContrast(comb[0], comb[1]), // Recalcula o contraste para garantir que esteja atualizado
+//   }))
 
-  const dataToExport = {
-    palette: currentPaletteForExport,
-    selectedCombinations: selectedCombinationsData,
-  }
+//   const dataToExport = {
+//     palette: currentPaletteForExport,
+//     selectedCombinations: selectedCombinationsData,
+//   }
 
-  const jsonString = JSON.stringify(dataToExport, null, 2)
+//   const jsonString = JSON.stringify(dataToExport, null, 2)
 
-  const blob = new Blob([jsonString], { type: 'application/json' })
+//   const blob = new Blob([jsonString], { type: 'application/json' })
 
-  const url = URL.createObjectURL(blob)
+//   const url = URL.createObjectURL(blob)
 
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'color_palette_and_combinations.json'
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+//   const a = document.createElement('a')
+//   a.href = url
+//   a.download = 'color_palette_and_combinations.json'
+//   document.body.appendChild(a)
+//   a.click()
+//   document.body.removeChild(a)
+//   URL.revokeObjectURL(url)
 
-  alert('Paleta e combinações selecionadas exportadas como JSON!')
-}
+//   alert('Paleta e combinações selecionadas exportadas como JSON!')
+// }
 
 const exportPaletteOnly = () => {
   const dataToExport = {
@@ -259,158 +259,145 @@ const exportPaletteOnly = () => {
 </script>
 
 <template>
-  <div>
-    <header>
-      <h2>Verificador de paleta</h2>
-      <button @click="exportSelected" class="secondary">Exportar Selecionados</button>
-    </header>
-    <main>
-      <aside class="container col left">
-        <div class="container close">
-          <h1 style="flex: 1 0 0">Paleta de cores</h1>
-          <button class="secondary icon" @click="triggerFileInput" title="Importar paleta">
-            <span class="material-icons-outlined">file_open</span>
-          </button>
-          <input
-            type="file"
-            ref="fileInput"
-            accept=".json"
-            @change="importPalette"
-            style="display: none"
-          />
-          <button class="secondary icon" @click="exportPaletteOnly" title="Exportar paleta">
-            <span class="material-icons-outlined">download</span>
-          </button>
-        </div>
+  <aside class="container col left">
+    <div class="container close v-align">
+      <h1 style="flex: 1 0 0">Paleta de cores</h1>
+      <button class="secondary icon" @click="triggerFileInput" title="Importar paleta">
+        <span class="material-symbols-outlined"> place_item </span>
+      </button>
+      <input
+        type="file"
+        ref="fileInput"
+        accept=".json"
+        @change="importPalette"
+        style="display: none"
+      />
+      <button class="secondary icon" @click="exportPaletteOnly" title="Baixar paleta">
+        <span class="material-symbols-outlined"> file_save </span>
+      </button>
+    </div>
 
-        <div class="container close">
-          <button @click="addColorSelector(generateRandomColor())" class="primary icon-left">
-            <span class="material-icons-outlined" title="Adicionar cor">add</span> Adicionar cor
-          </button>
-          <button class="secondary icon">
-            <span
-              class="material-icons-outlined"
-              @click="resetSelections"
-              title="Reiniciar seleções"
-              >restart_alt</span
-            >
-          </button>
-          <!-- <button @click="handleGenerateCombinations" class="primary" id="generate-combinations">
-            Gerar Combinações
-          </button> -->
-        </div>
+    <div class="container close">
+      <button @click="addColorSelector(generateRandomColor())" class="primary icon-left">
+        <span class="material-symbols-outlined"> add </span>
+        Adicionar cor
+      </button>
+      <button class="secondary icon" title="Reiniciar seleções" @click="resetSelections">
+        <span class="material-symbols-outlined"> restart_alt </span>
+      </button>
+      <!-- <button @click="handleGenerateCombinations" class="primary" id="generate-combinations">
+        Gerar Combinações
+      </button> -->
+    </div>
 
-        <div class="list">
-          <ColorInput
-            v-for="(colorObj, index) in colorPalette"
-            :key="colorObj.id"
-            :initial-color="colorObj.value"
-            :removable="colorPalette.length > 2"
-            @update:color="updateColor(index, $event)"
-            @remove="removeColorSelector(index)"
-          />
-        </div>
-      </aside>
+    <div class="list">
+      <ColorInput
+        v-for="(colorObj, index) in colorPalette"
+        :key="colorObj.id"
+        :initial-color="colorObj.value"
+        :removable="colorPalette.length > 2"
+        @update:color="updateColor(index, $event)"
+        @remove="removeColorSelector(index)"
+      />
+    </div>
+  </aside>
 
-      <hr />
+  <hr />
 
-      <div class="container col right">
-        <div class="container close">
-          <h2 style="margin-right: auto">Combinações Geradas</h2>
-          <button
-            :class="{ secondary: true, active: activeView === 'list' }"
-            @click="activeView = 'list'"
-          >
-            Lista
-          </button>
-          <button
-            :class="{ secondary: true, active: activeView === 'table' }"
-            @click="activeView = 'table'"
-          >
-            Tabela
-          </button>
+  <main class="container col right">
+    <div class="container close v-align">
+      <h2 style="margin-right: auto">Combinações Geradas</h2>
+      <button
+        :class="{ secondary: true, active: activeView === 'list' }"
+        @click="activeView = 'list'"
+      >
+        Lista
+      </button>
+      <button
+        :class="{ secondary: true, active: activeView === 'table' }"
+        @click="activeView = 'table'"
+      >
+        Tabela
+      </button>
+    </div>
+    <div class="container close">
+      <button
+        :class="{ chip: true, active: currentFilter === 'all' }"
+        @click="currentFilter = 'all'"
+      >
+        Todos
+        <div class="count">{{ generatedCombinations.length }}</div>
+      </button>
+      <button
+        :class="{ chip: true, active: currentFilter === 'aa-large' }"
+        @click="currentFilter = 'aa-large'"
+      >
+        AA Grande (>3.1:1)
+        <div class="count">
+          {{
+            generatedCombinations.filter(
+              (c) =>
+                checkContrast(c[0], c[1]).startsWith('3.1:') ||
+                parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 3.1,
+            ).length
+          }}
         </div>
-        <div class="container close">
-          <button
-            :class="{ chip: true, active: currentFilter === 'all' }"
-            @click="currentFilter = 'all'"
-          >
-            Todos
-            <div class="count">{{ generatedCombinations.length }}</div>
-          </button>
-          <button
-            :class="{ chip: true, active: currentFilter === 'aa-large' }"
-            @click="currentFilter = 'aa-large'"
-          >
-            AA Grande (>3.1:1)
-            <div class="count">
-              {{
-                generatedCombinations.filter(
-                  (c) =>
-                    checkContrast(c[0], c[1]).startsWith('3.1:') ||
-                    parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 3.1,
-                ).length
-              }}
-            </div>
-          </button>
-          <button
-            :class="{ chip: true, active: currentFilter === 'aa-normal' }"
-            @click="currentFilter = 'aa-normal'"
-          >
-            AA Normal (>4.5:1)
-            <div class="count">
-              {{
-                generatedCombinations.filter(
-                  (c) =>
-                    checkContrast(c[0], c[1]).startsWith('4.5:') ||
-                    parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 4.5,
-                ).length
-              }}
-            </div>
-          </button>
-          <button
-            :class="{ chip: true, active: currentFilter === 'aaa' }"
-            @click="currentFilter = 'aaa'"
-          >
-            AAA (>7:1)
-            <div class="count">
-              {{
-                generatedCombinations.filter(
-                  (c) =>
-                    checkContrast(c[0], c[1]).startsWith('7.0:') ||
-                    parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 7.0,
-                ).length
-              }}
-            </div>
-          </button>
+      </button>
+      <button
+        :class="{ chip: true, active: currentFilter === 'aa-normal' }"
+        @click="currentFilter = 'aa-normal'"
+      >
+        AA Normal (>4.5:1)
+        <div class="count">
+          {{
+            generatedCombinations.filter(
+              (c) =>
+                checkContrast(c[0], c[1]).startsWith('4.5:') ||
+                parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 4.5,
+            ).length
+          }}
         </div>
-        <div>
-          <div class="container col scroll" v-if="activeView === 'list'">
-            <ColorCombinationsList
-              :combinations="filteredCombinations"
-              :selected-combinations="selectedCombinations"
-              @update:selectedCombinations="selectedCombinations = $event"
-            />
-          </div>
+      </button>
+      <button
+        :class="{ chip: true, active: currentFilter === 'aaa' }"
+        @click="currentFilter = 'aaa'"
+      >
+        AAA (>7:1)
+        <div class="count">
+          {{
+            generatedCombinations.filter(
+              (c) =>
+                checkContrast(c[0], c[1]).startsWith('7.0:') ||
+                parseFloat(checkContrast(c[0], c[1]).split(':')[0]) >= 7.0,
+            ).length
+          }}
         </div>
-        <div class="container table-view" v-if="activeView === 'table'">
-          <ColorCombinationsTable
-            :palette="plainColorPalette"
-            :filtered-combinations="filteredCombinations"
-            :all-combinations="generatedCombinations"
-            :selected-combinations="selectedCombinations"
-            @update:selectedCombinations="selectedCombinations = $event"
-          />
-        </div>
+      </button>
+    </div>
+    <div>
+      <div class="container col scroll" v-if="activeView === 'list'">
+        <ColorCombinationsList
+          :combinations="filteredCombinations"
+          :selected-combinations="selectedCombinations"
+          @update:selectedCombinations="selectedCombinations = $event"
+        />
       </div>
-    </main>
-  </div>
+    </div>
+    <div class="container table-view" v-if="activeView === 'table'">
+      <ColorCombinationsTable
+        :palette="plainColorPalette"
+        :filtered-combinations="filteredCombinations"
+        :all-combinations="generatedCombinations"
+        :selected-combinations="selectedCombinations"
+        @update:selectedCombinations="selectedCombinations = $event"
+      />
+    </div>
+  </main>
 </template>
 
 <style>
 header {
-  height: 5rem;
-  background-color: var(--colors-surface-a);
+  height: 4rem;
   display: flex;
   align-items: center;
   padding: 1.5rem 2rem;
@@ -421,11 +408,9 @@ header {
   z-index: 100;
 }
 
-header h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  flex: 1;
+#logo {
+  height: 1.25rem;
+  margin-right: auto;
 }
 
 .color-selectors-container {
@@ -451,6 +436,7 @@ header h2 {
 }
 
 .count {
+  font-family: 'Spline Sans Mono', monospace;
   font-size: 0.75rem;
   background-color: var(--color-secondary);
   color: var(--color-text-muted);
