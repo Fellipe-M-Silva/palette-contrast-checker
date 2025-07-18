@@ -8,6 +8,8 @@ import { checkContrast } from '../utils/ColorUtils'
 const colorPalette = ref([])
 const activeView = ref('list')
 const plainColorPalette = computed(() => colorPalette.value.map((c) => c.value))
+const fileInput = ref(null)
+const selectedCombinations = ref([])
 let nextId = 0
 
 onMounted(() => {
@@ -24,12 +26,28 @@ const addColorSelector = (initialColor = '#FFFFFF') => {
 
 const removeColorSelector = (index) => {
   if (colorPalette.value.length > 2) {
+    const removedColor = colorPalette.value[index].value
+    selectedCombinations.value = selectedCombinations.value.filter(
+      (comb) => comb[0] !== removedColor && comb[1] !== removedColor,
+    )
     colorPalette.value.splice(index, 1)
   }
 }
 
 const updateColor = (index, newColor) => {
+  const oldColor = colorPalette.value[index].value
   colorPalette.value[index].value = newColor
+
+  selectedCombinations.value = selectedCombinations.value.map((comb) => {
+    let updatedComb = [...comb]
+    if (updatedComb[0] === oldColor) {
+      updatedComb[0] = newColor
+    }
+    if (updatedComb[1] === oldColor) {
+      updatedComb[1] = newColor
+    }
+    return updatedComb
+  })
 }
 
 const generatedCombinations = ref([])
@@ -78,12 +96,140 @@ const generateRandomColor = () => {
     .toString(16)
     .padStart(6, '0')}`
 }
+
+const triggerFileInput = () => {
+  fileInput.value.click()
+}
+
+const importPalette = (event) => {
+  const file = event.target.files[0]
+
+  if (!file) {
+    return
+  }
+
+  if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
+    alert('Por favor, selecione um arquivo JSON válido (.json).')
+    event.target.value = ''
+    return
+  }
+
+  const reader = new FileReader()
+
+  reader.onload = (e) => {
+    try {
+      const importedData = JSON.parse(e.target.result)
+
+      if (
+        !importedData ||
+        !Array.isArray(importedData.palette) ||
+        importedData.palette.some(
+          (item) => typeof item !== 'string' || !item.match(/^#([0-9a-fA-F]{3}){1,2}$/i),
+        )
+      ) {
+        alert(
+          'Formato de arquivo JSON inválido. O arquivo deve conter uma propriedade "palette" que é um array de strings de cores hexadecimais (ex: ["#FF0000", "#00FF00"]).',
+        )
+        return
+      }
+
+      const newColorPalette = []
+      let newNextId = 0
+
+      importedData.palette.forEach((color) => {
+        newColorPalette.push({
+          id: newNextId++,
+          value: color,
+        })
+      })
+
+      colorPalette.value = newColorPalette
+      nextId = newNextId
+
+      if (importedData.selectedCombinations && Array.isArray(importedData.selectedCombinations)) {
+        const validSelectedCombinations = importedData.selectedCombinations.filter(
+          (comb) =>
+            Array.isArray(comb) &&
+            comb.length === 2 &&
+            typeof comb[0] === 'string' &&
+            typeof comb[1] === 'string' &&
+            comb[0].match(/^#([0-9a-fA-F]{3}){1,2}$/i) &&
+            comb[1].match(/^#([0-9a-fA-F]{3}){1,2}$/i),
+        )
+        selectedCombinations.value = validSelectedCombinations
+      } else {
+        selectedCombinations.value = []
+      }
+
+      handleGenerateCombinations()
+
+      alert('Paleta e seleções importadas com sucesso!')
+    } catch (error) {
+      console.error('Erro ao parsear o JSON ou processar dados:', error)
+      alert(
+        'Erro ao ler o arquivo JSON. Certifique-se de que é um JSON válido e segue a estrutura esperada.',
+      )
+    } finally {
+      event.target.value = ''
+    }
+  }
+
+  reader.onerror = () => {
+    alert('Erro ao ler o arquivo.')
+  }
+
+  reader.readAsText(file)
+}
+
+const exportSelected = () => {
+  if (selectedCombinations.value.length === 0) {
+    alert('Nenhuma combinação selecionada para exportar!')
+    return
+  }
+
+  const currentPaletteForExport = plainColorPalette.value
+  const selectedCombinationsData = selectedCombinations.value.map((comb) => ({
+    color1: comb[0],
+    color2: comb[1],
+    contrast: checkContrast(comb[0], comb[1]), // Recalcula o contraste para garantir que esteja atualizado
+  }))
+
+  const dataToExport = {
+    palette: currentPaletteForExport,
+    selectedCombinations: selectedCombinationsData,
+  }
+
+  const jsonString = JSON.stringify(dataToExport, null, 2)
+
+  const blob = new Blob([jsonString], { type: 'application/json' })
+
+  const url = URL.createObjectURL(blob)
+
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'color_palette_and_combinations.json'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+
+  alert('Paleta e combinações selecionadas exportadas como JSON!')
+}
 </script>
 
 <template>
   <div>
     <header>
       <h2>Verificador de paleta</h2>
+      <button @click="triggerFileInput" class="secondary">Importar Paleta</button>
+      <input
+        type="file"
+        ref="fileInput"
+        @change="importPalette"
+        accept=".json"
+        style="display: none"
+      />
+      <button @click="exportSelected" class="secondary">Exportar Selecionados</button>
     </header>
     <main>
       <aside class="container left">
@@ -195,6 +341,7 @@ header {
   display: flex;
   align-items: center;
   padding: 1.5rem 2rem;
+  gap: 0.5rem;
   border-bottom: 1px solid var(--colors-border-medium);
   position: sticky;
   top: 0;
@@ -205,6 +352,7 @@ header h2 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
+  flex: 1;
 }
 
 .color-selectors-container {

@@ -1,40 +1,25 @@
 <script setup>
 import { defineProps } from 'vue'
-import { checkContrast, srgbLuminance, decompColor } from '../utils/ColorUtils' // Importar todas as funções necessárias
+import { checkContrast, srgbLuminance, decompColor } from '../utils/ColorUtils'
 
 const props = defineProps({
-  // A paleta de cores, que é um vetor de valores de cor (strings)
   palette: {
     type: Array,
     default: () => [],
   },
 })
 
-/**
- * Calcula e retorna a relação de contraste entre duas cores.
- * @param {string} color1 - O código da primeira cor (ex: #RRGGBB).
- * @param {string} color2 - O código da segunda cor (ex: #RRGGBB).
- * @returns {string} A relação de contraste formatada (ex: "4.50:1").
- */
 const calculateAndDisplayContrast = (color1, color2) => {
   return checkContrast(color1, color2)
 }
 
-/**
- * Retorna uma cor de texto que tenha bom contraste com a cor de fundo fornecida.
- * Útil para o cabeçalho da tabela.
- * @param {string} backgroundColor - A cor de fundo para verificar.
- * @returns {string} '#FFFFFF' (branco) ou '#000000' (preto).
- */
 const getContrastTextColor = (backgroundColor) => {
   try {
     const luminance = srgbLuminance(decompColor(backgroundColor))
-    // Usa um limiar de luminância para decidir entre texto claro ou escuro
-    // Um valor comum é 0.179 (WCAG 2.1) ou 0.5 (simples)
     return luminance > 0.179 ? '#000000' : '#FFFFFF'
   } catch (e) {
     console.error('Erro ao determinar cor do texto de contraste:', e)
-    return '#000000' // Padrão preto em caso de erro
+    return '#000000'
   }
 }
 </script>
@@ -86,15 +71,8 @@ const getContrastTextColor = (backgroundColor) => {
   text-align: center;
 }
 
-h2 {
-  text-align: left;
-  margin-bottom: 1.5rem;
-  color: #333;
-}
-
 .table-wrapper {
   overflow-x: auto;
-  padding-bottom: 10px;
 }
 
 table {
